@@ -1,38 +1,31 @@
-const readline = require("readline");
+function generateParentheses(n: number) {
+  const result: string[] = [];
 
-function readInput(): Promise<string[]> {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
+  function backtrack(sequence: string, open: number, close: number) {
+    // Если длина последовательности достигла 2 * n, добавляем ее в результат
+    if (sequence.length === 2 * n) {
+      result.push(sequence);
+      return;
+    }
 
-  const lines: string[] = [];
+    // Если количество открывающих скобок меньше n, можем добавить еще одну
+    if (open < n) {
+      backtrack(sequence + "(", open + 1, close);
+    }
 
-  return new Promise((resolve) => {
-    rl.on("line", (line: string) => {
-      lines.push(line);
-    });
-
-    rl.on("close", () => {
-      resolve(lines);
-    });
-  });
-}
-
-async function main() {
-  const input = await readInput();
-  const numberOfElements = Number(input[0]);
-
-  const used = new Map();
-
-  for (let i = 1; i <= numberOfElements; i++) {
-    if (!used.has(Number(input[i]))) {
-      used.set(Number(input[i]), "");
-      console.log(input[i]);
+    // Если количество закрывающих скобок меньше открывающих, можем добавить закрывающую
+    if (close < open) {
+      backtrack(sequence + ")", open, close + 1);
     }
   }
+
+  // Запускаем рекурсию с пустой последовательностью и счетчиками открытых и закрытых скобок равными 0
+  backtrack("", 0, 0);
+  return result;
 }
 
-main();
+// Чтение входного значения n
+const sequences = generateParentheses(2);
 
-export {};
+// Выводим результат
+console.log(sequences.join("\n"));
